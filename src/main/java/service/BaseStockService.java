@@ -41,7 +41,7 @@ public final class BaseStockService {
         return productList;
     }
 
-    private Product checkProduct (String scannerLine){
+    public Product checkProduct (String scannerLine){
         String[] splitLine = scannerLine.replaceAll(",+", ".").split("\\\\");
         return deserializeProduct(splitLine);
     }

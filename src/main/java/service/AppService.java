@@ -22,15 +22,14 @@ public class AppService {
 
     public double calculateFoodBasketCost(String basket) {
         cost = 0.0;
-        basket = basket.replaceAll("[^a-zA-Z]", "");
         Map<String, Integer> optimizeFoodBasket = doOptimization(basket);
-        optimizeFoodBasket.entrySet()
-                .forEach(typeProductInBasket -> cost += costOfOneTypeProductInBasket(typeProductInBasket, allProducts));
+        optimizeFoodBasket.forEach((key, value) -> cost += costOfOneTypeProductInBasket(key, value, allProducts));
         return cost;
     }
 
-    private Map<String, Integer> doOptimization(String basket) {
+    public Map<String, Integer> doOptimization(String basket) {
         Map<String, Integer> tempMap = new HashMap<>();
+        basket = basket.replaceAll("[^a-zA-Z]", "");
         String[] arrBasket = basket.split("");
         for (String element : arrBasket) {
             if (tempMap.containsKey(element)) {
@@ -42,16 +41,16 @@ public class AppService {
         return tempMap;
     }
 
-    private double costOfOneTypeProductInBasket(Map.Entry<String, Integer> oneTypeProduct, Map<String, Product> allProducts) {
-        Product tempProduct = allProducts.get(oneTypeProduct.getKey());
+    public double costOfOneTypeProductInBasket(String oneTypeProductName, int oneTypeProductCount, Map<String, Product> allProducts) {
+        Product tempProduct = allProducts.get(oneTypeProductName);
         double costWithoutPromotion;
         double costWithPromotion;
         if (tempProduct.hasPromotion()) {
-            costWithPromotion = (double) (oneTypeProduct.getValue() / tempProduct.getPromotion()) * tempProduct.getPromotionPrice();
-            costWithoutPromotion = (oneTypeProduct.getValue() % tempProduct.getPromotion()) * tempProduct.getPrice();
+            costWithPromotion = (double) (oneTypeProductCount / tempProduct.getPromotion()) * tempProduct.getPromotionPrice();
+            costWithoutPromotion = (oneTypeProductCount % tempProduct.getPromotion()) * tempProduct.getPrice();
         } else {
             costWithPromotion = 0;
-            costWithoutPromotion = oneTypeProduct.getValue() * tempProduct.getPrice();
+            costWithoutPromotion = oneTypeProductCount * tempProduct.getPrice();
         }
         return costWithPromotion + costWithoutPromotion;
     }
