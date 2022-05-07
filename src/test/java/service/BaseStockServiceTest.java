@@ -4,6 +4,12 @@ import model.Product;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import util.Resources;
+
+import java.io.File;
+import java.util.Map;
+import java.util.Objects;
 
 class BaseStockServiceTest {
     private BaseStockService baseStockService;
@@ -12,14 +18,25 @@ class BaseStockServiceTest {
 
     @BeforeEach
     void setUp() {
-        baseStockService = new BaseStockService();
+        Resources resourcesMock = Mockito.mock(Resources.class);
+        String path = Objects.requireNonNull(BaseStockServiceTest.class.getClassLoader().getResource("StockTest.txt")).getPath();
+        Mockito.when(resourcesMock.getFileResources()).thenReturn(new File(path));
+        baseStockService = new BaseStockService(resourcesMock);
         testProduct1 = new Product("F", 2.0);
         testProduct2 = new Product("F",2.0, 2,1.0);
     }
 
     @Test
+    void getBasePrices_TestReturnCorrectValue() {
+        Map<String, Product> correctValue = Map.of(
+                "F", new Product("F", 1.25, 3, 3.0),
+                "E", new Product("E", 4.25));
+        Assertions.assertEquals(correctValue, baseStockService.getBasePrices());
+    }
+
+    @Test
     void getBasePrices_TestReturnNotNull() {
-        Assertions.assertNotNull(baseStockService.getBasePrices("Stock.txt"));
+        Assertions.assertNotNull(baseStockService.getBasePrices());
     }
 
     @Test

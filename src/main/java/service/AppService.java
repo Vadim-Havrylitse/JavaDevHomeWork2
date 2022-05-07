@@ -1,27 +1,31 @@
 package service;
 
-import lombok.NoArgsConstructor;
 import model.Product;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@NoArgsConstructor
 public class AppService {
+    private final BaseStockService actualStockBaseService;
     private double cost = 0.0;
 
-    public void printFoodBasketCost (String basket, Map<String, Product> actualStockBase){
+    public AppService(BaseStockService actualStockBaseService){
+        this.actualStockBaseService = actualStockBaseService;
+    }
+
+    public void printFoodBasketCost (String basket){
         System.out.println("Cost of \""
                 + basket
                 + "\" = "
-                + calculateFoodBasketCost(basket, actualStockBase));
+                + calculateTotalCost(basket));
     }
 
-
-
-    public double calculateFoodBasketCost(String basket, Map<String, Product> actualStockBase) {
+    public double calculateTotalCost(String basket) {
         cost = 0.0;
+        if (basket.length() == 0) return cost;
+
         Map<String, Integer> optimizeFoodBasket = doOptimization(basket);
+        Map<String, Product> actualStockBase = actualStockBaseService.getBasePrices();
         optimizeFoodBasket.forEach((key, value) -> cost += costOfOneTypeProductInBasket(key, value, actualStockBase));
         return cost;
     }

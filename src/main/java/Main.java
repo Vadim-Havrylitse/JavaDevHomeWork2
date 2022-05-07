@@ -1,16 +1,15 @@
-import model.Product;
 import service.AppService;
 import service.BaseStockService;
-
-import java.util.Map;
+import util.ResourcesImpl;
 
 public class Main {
-    public static Map<String, Product> stock = new BaseStockService().getBasePrices("Stock.txt");
-    public static AppService app = new AppService();
+
+    public static AppService app = new AppService(new BaseStockService(new ResourcesImpl("Stock.txt")));
 
     public static void main(String[] args) {
-        app.printFoodBasketCost("ABCD", stock);
-        app.printFoodBasketCost("ABCDABA", stock);
-        app.printFoodBasketCost("ABCDA34BA", stock);
+        app.printFoodBasketCost("ABCD");
+        app.printFoodBasketCost("ABCDABA");
+        app.printFoodBasketCost("ABCDA34BA");
+        app.printFoodBasketCost("");
     }
 }

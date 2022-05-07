@@ -4,24 +4,27 @@ import model.Product;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.Map;
 
 class AppServiceTest {
+    private BaseStockService baseStockServiceMock;
     private AppService appService;
-    private Map<String, Product> allProduct;
 
     @BeforeEach
     void setUp() {
-        appService = new AppService();
-        allProduct = Map.of(
-                "F", new Product("F",1.25,3,3),
-                "E", new Product("E",4.25));
+        baseStockServiceMock = Mockito.mock(BaseStockService.class);
+        Mockito.when(baseStockServiceMock.getBasePrices()).thenReturn(Map.of(
+                "F", new Product("F",1.25,3,3.0),
+                "E", new Product("E",4.25)));
+
+        appService = new AppService(baseStockServiceMock);
     }
 
     @Test
-    void testCorrectValueCalculateFoodBasketCost() {
+    void calculateTotalCost_TestCorrectValue() {
         Map<String, Double> correctValue = new HashMap<>();
         correctValue.put("F", 1.25);
         correctValue.put("E", 4.25);
@@ -31,13 +34,14 @@ class AppServiceTest {
         correctValue.put("FFFFEE", 12.75);
         correctValue.put("FFFFEE321", 12.75);
         correctValue.put("F ♦ F_F E*/E F-", 12.75);
+        correctValue.put("", 0.0);
 
         correctValue.forEach((key, value) ->
-                Assertions.assertEquals(correctValue.get(key), appService.calculateFoodBasketCost(key, allProduct)));
+                Assertions.assertEquals(correctValue.get(key), appService.calculateTotalCost(key)));
     }
 
     @Test
-    void testCorrectMethodWorkDoOptimization() {
+    void doOptimization_TestCorrectValue() {
         Map<String, Map<String, Integer>> correctValue = new HashMap<>();
         correctValue.put("ABCD",
                 Map.of("A", 1,
@@ -56,7 +60,8 @@ class AppServiceTest {
     }
 
     @Test
-    void testMethodOkCostOfOneTypeProductInBasket() {
+    void costOfOneTypeProductInBasket_TestCorrectValue() {
+        Map<String, Product> allProduct = baseStockServiceMock.getBasePrices();
         Assertions.assertEquals(1.25, appService.costOfOneTypeProductInBasket("F",1, allProduct));
         Assertions.assertEquals(3, appService.costOfOneTypeProductInBasket("F",3, allProduct));
         Assertions.assertEquals(4.25, appService.costOfOneTypeProductInBasket("F",4, allProduct));
