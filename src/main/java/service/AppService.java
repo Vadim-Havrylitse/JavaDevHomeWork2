@@ -22,7 +22,7 @@ public class AppService {
 
     public double calculateTotalCost(String basket) {
         cost = 0.0;
-        if (basket.length() == 0) return cost;
+        if (basket.length() == 0) return 0.0;
 
         Map<String, Integer> optimizeFoodBasket = doOptimization(basket);
         Map<String, Product> actualStockBase = actualStockBaseService.getBasePrices();
@@ -46,7 +46,11 @@ public class AppService {
 
     public double costOfOneTypeProductInBasket(String oneTypeProductName, int oneTypeProductCount, Map<String, Product> actualStockBase) {
         Product tempProduct = actualStockBase.get(oneTypeProductName);
-        //добавить проверку на налл, ситуация когда пользоваетль введет незнакомый товар
+
+        if (tempProduct == null) {
+            return 0.0;
+        }
+
         double costWithoutPromotion;
         double costWithPromotion;
         if (tempProduct.hasPromotion()) {
