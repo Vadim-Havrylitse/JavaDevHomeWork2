@@ -10,33 +10,31 @@ import java.util.Map;
 
 class AppServiceTest {
     private AppService appService;
-
-
+    private Map<String, Product> allProduct;
 
     @BeforeEach
     void setUp() {
         appService = new AppService();
-
+        allProduct = Map.of(
+                "F", new Product("F",1.25,3,3),
+                "E", new Product("E",4.25));
     }
 
     @Test
-    void testCorrectCalculateFoodBasketCost() {
+    void testCorrectValueCalculateFoodBasketCost() {
         Map<String, Double> correctValue = new HashMap<>();
-        correctValue.put("A",1.25);
-        correctValue.put("B",4.25);
-        correctValue.put("C",1.00);
-        correctValue.put("D",0.75);
-        correctValue.put("ABCD", 7.25);
-        correctValue.put("ABcD",6.25);
-        correctValue.put("AAACCCCCC", 8.00);
-        correctValue.put("AAAACCCCCC", 9.25);
-        correctValue.put("ABCD321", 7.25);
-        correctValue.put("A ♦ B_C D*/-", 7.25);
+        correctValue.put("F", 1.25);
+        correctValue.put("E", 4.25);
+        correctValue.put("FF", 2.5);
+        correctValue.put("EE", 8.5);
+        correctValue.put("FFF", 3.0);
+        correctValue.put("FFFFEE", 12.75);
+        correctValue.put("FFFFEE321", 12.75);
+        correctValue.put("F ♦ F_F E*/E F-", 12.75);
 
         correctValue.forEach((key, value) ->
-                Assertions.assertEquals(correctValue.get(key), appService.calculateFoodBasketCost(key)));
+                Assertions.assertEquals(correctValue.get(key), appService.calculateFoodBasketCost(key, allProduct)));
     }
-
 
     @Test
     void testCorrectMethodWorkDoOptimization() {
@@ -46,11 +44,12 @@ class AppServiceTest {
                         "B", 1,
                         "C", 1,
                         "D", 1));
-        correctValue.put("D",
-                Map.of("D",1));
+        correctValue.put("FF",
+                Map.of("F",2));
         correctValue.put("AAACCCCCC",
                 Map.of("A", 3,
                         "C", 6));
+
         correctValue.forEach((basket, answer) -> {
             Assertions.assertEquals(answer, appService.doOptimization(basket));
         });
@@ -58,16 +57,9 @@ class AppServiceTest {
 
     @Test
     void testMethodOkCostOfOneTypeProductInBasket() {
-        Map<String, Product> allProduct = new HashMap<>();
-        allProduct.put("F",new Product("F",1.25,3,3));
-        allProduct.put("E",new Product("E",4.25));
-
         Assertions.assertEquals(1.25, appService.costOfOneTypeProductInBasket("F",1, allProduct));
         Assertions.assertEquals(3, appService.costOfOneTypeProductInBasket("F",3, allProduct));
         Assertions.assertEquals(4.25, appService.costOfOneTypeProductInBasket("F",4, allProduct));
         Assertions.assertEquals(8.5, appService.costOfOneTypeProductInBasket("E",2, allProduct));
-
     }
-
-
 }

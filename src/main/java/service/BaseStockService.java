@@ -1,35 +1,25 @@
 package service;
 
-
+import lombok.NoArgsConstructor;
 import model.Product;
+import util.Resources;
+import util.ResourcesImpl;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public final class BaseStockService {
-    private static BaseStockService baseConnect;
+@NoArgsConstructor
+public class BaseStockService {
 
     private final Map<String, Product> productList = new HashMap<>();
-
-    private BaseStockService(){}
-
-    public static BaseStockService getInstance (){
-        if (baseConnect == null) {
-            baseConnect = new BaseStockService();
-        }
-        return baseConnect;
-    }
+    private final Resources resource = new ResourcesImpl();
 
     public Map<String, Product> getBasePrices (String stockFileName){
         productList.clear();
-        URL resource = BaseStockService.class.getClassLoader().getResource(stockFileName);
-        assert resource != null : new FileNotFoundException("Your stock has not been loaded!");
         try{
-            Scanner scanner = new Scanner(new File(resource.getPath()));
+            Scanner scanner = new Scanner(resource.getFileResources(stockFileName));
             while (scanner.hasNextLine()){
                 Product temp = checkProduct(scanner.nextLine());
                 productList.put(temp.getName(), temp);
@@ -42,15 +32,17 @@ public final class BaseStockService {
     }
 
     public Product checkProduct (String scannerLine){
-        String[] splitLine = scannerLine.replaceAll(",+", ".").split("\\\\");
+        String[] splitLine = scannerLine
+                .replaceAll(",+", ".")
+                .split("\\\\");
         return deserializeProduct(splitLine);
     }
 
-    public static Product deserializeProduct (String[] args){
+    public Product deserializeProduct (String[] args){
         assert args != null;
-        return args[2].equals("-") ?
-                new Product(args[0],Double.parseDouble(args[1])) :
-                new Product(args[0],Double.parseDouble(args[1]), Integer.parseInt(args[2]), Double.parseDouble(args[3]));
+        return (args[2]+args[3]).matches("[0-9]*[.][0-9]") ?
+                new Product(args[0],Double.parseDouble(args[1]), Integer.parseInt(args[2]), Double.parseDouble(args[3])) :
+                new Product(args[0],Double.parseDouble(args[1]));
     }
 
 

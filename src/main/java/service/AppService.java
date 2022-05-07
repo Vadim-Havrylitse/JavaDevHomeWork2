@@ -8,22 +8,21 @@ import java.util.Map;
 
 @NoArgsConstructor
 public class AppService {
-    private final Map<String, Product> allProducts = BaseStockService.getInstance().getBasePrices("Stock.txt");
     private double cost = 0.0;
 
-    public void printFoodBasketCost (String basket){
+    public void printFoodBasketCost (String basket, Map<String, Product> actualStockBase){
         System.out.println("Cost of \""
                 + basket
                 + "\" = "
-                + calculateFoodBasketCost(basket));
+                + calculateFoodBasketCost(basket, actualStockBase));
     }
 
 
 
-    public double calculateFoodBasketCost(String basket) {
+    public double calculateFoodBasketCost(String basket, Map<String, Product> actualStockBase) {
         cost = 0.0;
         Map<String, Integer> optimizeFoodBasket = doOptimization(basket);
-        optimizeFoodBasket.forEach((key, value) -> cost += costOfOneTypeProductInBasket(key, value, allProducts));
+        optimizeFoodBasket.forEach((key, value) -> cost += costOfOneTypeProductInBasket(key, value, actualStockBase));
         return cost;
     }
 
@@ -41,8 +40,9 @@ public class AppService {
         return tempMap;
     }
 
-    public double costOfOneTypeProductInBasket(String oneTypeProductName, int oneTypeProductCount, Map<String, Product> allProducts) {
-        Product tempProduct = allProducts.get(oneTypeProductName);
+    public double costOfOneTypeProductInBasket(String oneTypeProductName, int oneTypeProductCount, Map<String, Product> actualStockBase) {
+        Product tempProduct = actualStockBase.get(oneTypeProductName);
+        //добавить проверку на налл, ситуация когда пользоваетль введет незнакомый товар
         double costWithoutPromotion;
         double costWithPromotion;
         if (tempProduct.hasPromotion()) {
