@@ -35,10 +35,24 @@ class AppServiceTest {
         correctValue.put("FFFFEE321", 12.75);
         correctValue.put("F ♦ F_F E*/E F-", 12.75);
         correctValue.put("", 0.0);
+        correctValue.put(null, 0.0);
 
         correctValue.forEach((key, value) ->
                 Assertions.assertEquals(correctValue.get(key), appService.calculateTotalCost(key)));
     }
+
+    @Test
+    void calculateTotalCost_TestCheckForNullAndEmpty() {
+        Map<String, Double> correctValue = new HashMap<>();
+        correctValue.put("", 0.0);
+        correctValue.put(null, 0.0);
+
+        Mockito.verify(baseStockServiceMock, Mockito.never());
+
+        correctValue.forEach((key, value) ->
+                Assertions.assertEquals(correctValue.get(key), appService.calculateTotalCost(key)));
+    }
+
 
     @Test
     void doOptimization_TestCorrectValue() {

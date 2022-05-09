@@ -13,7 +13,7 @@ public class ResourcesImpl implements Resources{
 
     @Override
     public File getFileResources() {
-        URL resource = ResourcesImpl.class.getClassLoader().getResource(fileName);
+        URL resource = getClass().getClassLoader().getResource(fileName);
         assert resource != null : new FileNotFoundException("Your stock has not been loaded!");
         return new File(resource.getPath());
     }
