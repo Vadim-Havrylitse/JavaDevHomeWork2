@@ -22,6 +22,7 @@ public class AppService {
 
     public double calculateTotalCost(String basket) {
         cost = 0.0;
+        //please ALWAYS use {} with if and for statements even with one line
         if (basket == null || basket.isEmpty()) return 0.0;
 
         Map<String, Integer> optimizeFoodBasket = doOptimization(basket);
@@ -44,6 +45,7 @@ public class AppService {
         return tempMap;
     }
 
+    //the name of a method should be a verb
     public double costOfOneTypeProductInBasket(String oneTypeProductName, int oneTypeProductCount, Map<String, Product> actualStockBase) {
         Product tempProduct = actualStockBase.get(oneTypeProductName);
         double costWithoutPromotion;

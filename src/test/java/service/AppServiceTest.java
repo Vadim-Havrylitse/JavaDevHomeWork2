@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class AppServiceTest {
+    //glad to see mock here :)
     private BaseStockService baseStockServiceMock;
     private AppService appService;
 

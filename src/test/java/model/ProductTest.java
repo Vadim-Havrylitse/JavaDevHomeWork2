@@ -21,6 +21,7 @@ class ProductTest {
 
     @Test
     void hasPromotion() {
+        //as Idea suggest here we can use just AssertTrue or False
         Assertions.assertEquals(true,testProduct2.hasPromotion());
         Assertions.assertEquals(false,testProduct1.hasPromotion());
     }
